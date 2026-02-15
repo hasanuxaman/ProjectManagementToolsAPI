@@ -171,7 +171,7 @@ namespace PMSYSAPI.Services.Implementations
             try
             {
                 var projects = await _context.tbProjList
-                    .Where(p => p.CompCod == companyId)
+                    .Where(p => p.ProjCompCod == companyId)
                     .ToListAsync();
 
                 var dtos = _mapper.Map<IEnumerable<ProjectDto>>(projects);
@@ -188,7 +188,7 @@ namespace PMSYSAPI.Services.Implementations
             try
             {
                 var projects = await _context.tbProjList
-                    .Where(p => p.StatusCod == statusId)
+                    .Where(p => p.ProjStsCod == statusId)
                     .ToListAsync();
 
                 var dtos = _mapper.Map<IEnumerable<ProjectDto>>(projects);
@@ -205,7 +205,7 @@ namespace PMSYSAPI.Services.Implementations
             try
             {
                 var projects = await _context.tbProjList
-                    .Where(p => p.PhaseCod == phaseId)
+                    .Where(p => p.ProjPhaseCod == phaseId)
                     .ToListAsync();
 
                 var dtos = _mapper.Map<IEnumerable<ProjectDto>>(projects);
@@ -244,7 +244,7 @@ namespace PMSYSAPI.Services.Implementations
             try
             {
                 var projects = await _context.tbProjList
-                    .Where(p => p.InitDate >= startDate && p.EndPlannedDate <= endDate)
+                    .Where(p => p.ProjInitDate >= startDate && p.ProjEndPlandt <= endDate)
                     .ToListAsync();
 
                 var dtos = _mapper.Map<IEnumerable<ProjectDto>>(projects);
@@ -265,36 +265,36 @@ namespace PMSYSAPI.Services.Implementations
                 var projects = _context.tbProjList.AsQueryable();
 
                 var totalProjects = await projects.CountAsync();
-                var totalAmount = await projects.SumAsync(p => p.EstimatedAmount);
+                var totalAmount = await projects.SumAsync(p => p.ProjEstAmount);
                 var averageAmount = totalProjects > 0 ? totalAmount / totalProjects : 0;
 
                 var statusSummary = await projects
-                    .GroupBy(p => p.StatusCod)
+                    .GroupBy(p => p.ProjStsCod)
                     .Select(g => new ProjectStatusSummaryDto
                     {
                         StatusCod = g.Key,
                         Count = g.Count(),
-                        TotalAmount = g.Sum(p => p.EstimatedAmount)
+                        TotalAmount = g.Sum(p => p.ProjEstAmount)
                     })
                     .ToListAsync();
 
                 var phaseSummary = await projects
-                    .GroupBy(p => p.PhaseCod)
+                    .GroupBy(p => p.ProjPhaseCod)
                     .Select(g => new ProjectPhaseSummaryDto
                     {
                        
                         Count = g.Count(),
-                        TotalAmount = g.Sum(p => p.EstimatedAmount)
+                        TotalAmount = g.Sum(p => p.ProjEstAmount)
                     })
                     .ToListAsync();
 
                 var companySummary = await projects
-                    .GroupBy(p => p.CompCod)
+                    .GroupBy(p => p.ProjCompCod)
                     .Select(g => new CompanyProjectSummaryDto
                     {
                         CompanyName = g.Key.ToString(),
                         ProjectCount = g.Count(),
-                        TotalAmount = (decimal)g.Sum(p => p.EstimatedAmount)
+                        TotalAmount = (decimal)g.Sum(p => p.ProjEstAmount)
                     })
                     .OrderByDescending(c => c.ProjectCount)
                     .Take(10)
@@ -331,7 +331,7 @@ namespace PMSYSAPI.Services.Implementations
                 if (!await _projectStatusRepository.ExistsAsync(statusId))
                     return ApiResponse<ProjectDto>.Fail($"Status with ID {statusId} does not exist");
 
-                project.StatusCod = statusId;
+                project.ProjStsCod = statusId;
                 await _projectRepository.UpdateAsync(project);
 
                 var dto = _mapper.Map<ProjectDto>(project);
@@ -354,7 +354,7 @@ namespace PMSYSAPI.Services.Implementations
                 if (!await _projectPhaseRepository.ExistsAsync(phaseId))
                     return ApiResponse<ProjectDto>.Fail($"Phase with ID {phaseId} does not exist");
 
-                project.StatusCod = phaseId;
+                project.ProjStsCod = phaseId;
                 await _projectRepository.UpdateAsync(project);
 
                 var dto = _mapper.Map<ProjectDto>(project);

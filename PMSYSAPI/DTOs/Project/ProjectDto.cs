@@ -70,6 +70,19 @@ namespace PMSYSAPI.DTOs.Project
         public string ProjStatus { get; set; } = string.Empty;
         public string ProjStsDtl { get; set; } = string.Empty;
     }
+    
+
+    public class CreateProjectStatusDto
+    {
+        public string StatusName { get; set; } = string.Empty;
+        public string? StatusShortname { get; set; }
+    }
+
+    public class UpdateProjectStatusDto
+    {
+        public string StatusName { get; set; } = string.Empty;
+        public string? StatusShortname { get; set; }
+    }
 
     public class ProjectSummaryDto
     {

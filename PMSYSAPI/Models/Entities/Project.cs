@@ -5,41 +5,48 @@ namespace PMSYSAPI.Models.Entities
 {
     public class tbProjList
     {
-        [Key]
+         [Key]
         [Column("ProjCod")]
         public int ProjCod { get; set; }
 
         [Column("Proj_Name")]
-        [MaxLength(200)]
         public string ProjName { get; set; } = null!;
 
         [Column("Proj_Shortname")]
-        [MaxLength(50)]
-        public string ProjShortname { get; set; } = null!;
+        public string? ProjShortname { get; set; }
 
         [Column("Proj_Desc")]
-        [MaxLength(500)]
-        public string ProjDesc { get; set; } = null!;
+        public string? ProjDesc { get; set; }
 
         [Column("Proj_compcod")]
-        public int CompCod { get; set; }
+        public int ProjCompCod { get; set; }
 
         [Column("Proj_Phasecod")]
-        public int PhaseCod { get; set; }
+        public int ProjPhaseCod { get; set; }
 
         [Column("Proj_StsCod")]
-        public int StatusCod { get; set; }
+        public int ProjStsCod { get; set; }
 
         [Column("Proj_initDate")]
-        public DateTime? InitDate { get; set; }
+        public DateTime? ProjInitDate { get; set; }
 
         [Column("Proj_StrtPlndt")]
-        public DateTime? StartPlannedDate { get; set; }
+        public DateTime? ProjStrtPlndt { get; set; }
 
         [Column("Proj_EndPlandt")]
-        public DateTime? EndPlannedDate { get; set; }
+        public DateTime? ProjEndPlandt { get; set; }
 
         [Column("Proj_EstAmount")]
-        public decimal? EstimatedAmount { get; set; }
+        public decimal? ProjEstAmount { get; set; }
+
+        // Navigation properties (optional, for joins)
+        [ForeignKey("ProjCompCod")]
+        public tbComp? Company { get; set; }
+
+        [ForeignKey("ProjPhaseCod")]
+        public tbProjPhase? Phase { get; set; }
+
+        [ForeignKey("ProjStsCod")]
+        public tbStatus? Status { get; set; }
     }
 }

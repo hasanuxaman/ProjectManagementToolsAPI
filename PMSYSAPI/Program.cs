@@ -24,7 +24,6 @@ builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<IProjectPhaseService, ProjectPhaseService>();
 builder.Services.AddScoped<ICompanyGroupService, CompanyGroupService>();
-builder.Services.AddScoped<IProjectPhaseService, ProjectPhaseService>();
 builder.Services.AddScoped<IProjectStatusService, ProjectStatusService>();
 builder.Services.AddScoped<IStoredProcedureService, StoredProcedureService>();
 

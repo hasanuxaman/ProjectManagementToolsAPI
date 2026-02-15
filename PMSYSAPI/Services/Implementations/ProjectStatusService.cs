@@ -1,93 +1,79 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using PMSYSAPI.Data;
 using PMSYSAPI.DTOs.Project;
-using PMSYSAPI.Repository.Interfaces;
+using PMSYSAPI.Models.Entities;
 using PMSYSAPI.Services.Interfaces;
 
-namespace PMSYSAPI.Services.Implementations
+public class ProjectStatusService : IProjectStatusService
 {
-    public class ProjectStatusService : IProjectStatusService
+    private readonly AppDbContext _context;
+    private readonly IMapper _mapper;
+
+    public ProjectStatusService(AppDbContext context, IMapper mapper)
     {
-        private readonly IProjectStatusRepository _projectStatusRepository;
-        private readonly IMapper _mapper;
+        _context = context;
+        _mapper = mapper;
+    }
 
-        public ProjectStatusService(IProjectStatusRepository projectStatusRepository, IMapper mapper)
+    public async Task<ApiResponse<IEnumerable<ProjectStatusDto>>> GetAllStatusesAsync()
+    {
+        var statuses = await _context.tbStatus.ToListAsync();
+        var dtos = _mapper.Map<IEnumerable<ProjectStatusDto>>(statuses);
+        return new ApiResponse<IEnumerable<ProjectStatusDto>>
         {
-            _projectStatusRepository = projectStatusRepository;
-            _mapper = mapper;
-        }
+            Success = true,
+            Message = "Project statuses retrieved successfully",
+            Data = dtos
+        };
+    }
 
-        public Task<bool> ExistsAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
+    public async Task<ApiResponse<ProjectStatusDto>> GetStatusByIdAsync(int id)
+    {
+        var status = await _context.tbStatus.FindAsync(id);
+        if (status == null)
+            return ApiResponse<ProjectStatusDto>.Fail($"Project status with ID {id} not found");
 
-        public async Task<ApiResponse<IEnumerable<ProjectStatusDto>>> GetAllStatusesAsync()
-        {
-            try
-            {
-                var statuses = await _projectStatusRepository.GetAllAsync();
-                var statusDtos = _mapper.Map<IEnumerable<ProjectStatusDto>>(statuses);
+        var dto = _mapper.Map<ProjectStatusDto>(status);
+        return ApiResponse<ProjectStatusDto>.Ok("Project status retrieved successfully", dto);
+    }
 
-                return new ApiResponse<IEnumerable<ProjectStatusDto>>
-                {
-                    Success = true,
-                    Message = "Project statuses retrieved successfully",
-                    Data = statusDtos
-                };
-            }
-            catch (Exception ex)
-            {
-                return new ApiResponse<IEnumerable<ProjectStatusDto>>
-                {
-                    Success = false,
-                    Message = "Error retrieving project statuses",
-                    Errors = new List<string> { ex.Message }
-                };
-            }
-        }
+    public async Task<ApiResponse<ProjectStatusDto>> CreateStatusAsync(CreateProjectStatusDto dto)
+    {
+        var status = _mapper.Map<tbStatus>(dto);
+        _context.tbStatus.Add(status);
+        await _context.SaveChangesAsync();
 
-        public async Task<ApiResponse<ProjectStatusDto>> GetStatusByIdAsync(int id)
-        {
-            try
-            {
-                var status = await _projectStatusRepository.GetByIdAsync(id);
-                if (status == null)
-                {
-                    return new ApiResponse<ProjectStatusDto>
-                    {
-                        Success = false,
-                        Message = $"Project status with ID {id} not found"
-                    };
-                }
+        var resultDto = _mapper.Map<ProjectStatusDto>(status);
+        return ApiResponse<ProjectStatusDto>.Ok("Project status created successfully", resultDto);
+    }
 
-                var statusDto = _mapper.Map<ProjectStatusDto>(status);
+    public async Task<ApiResponse<ProjectStatusDto>> UpdateStatusAsync(int id, UpdateProjectStatusDto dto)
+    {
+        var status = await _context.tbStatus.FindAsync(id);
+        if (status == null)
+            return ApiResponse<ProjectStatusDto>.Fail($"Project status with ID {id} not found");
 
-                return new ApiResponse<ProjectStatusDto>
-                {
-                    Success = true,
-                    Message = "Project status retrieved successfully",
-                    Data = statusDto
-                };
-            }
-            catch (Exception ex)
-            {
-                return new ApiResponse<ProjectStatusDto>
-                {
-                    Success = false,
-                    Message = "Error retrieving project status",
-                    Errors = new List<string> { ex.Message }
-                };
-            }
-        }
+        _mapper.Map(dto, status);
+        await _context.SaveChangesAsync();
 
-        Task<ApiResponse<IEnumerable<ProjectStatusDto>>> IProjectStatusService.GetAllStatusesAsync()
-        {
-            throw new NotImplementedException();
-        }
+        var resultDto = _mapper.Map<ProjectStatusDto>(status);
+        return ApiResponse<ProjectStatusDto>.Ok("Project status updated successfully", resultDto);
+    }
 
-        Task<ApiResponse<ProjectStatusDto>> IProjectStatusService.GetStatusByIdAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
+    public async Task<ApiResponse> DeleteStatusAsync(int id)
+    {
+        var status = await _context.tbStatus.FindAsync(id);
+        if (status == null)
+            return ApiResponse.Fail($"Project status with ID {id} not found");
+
+        _context.tbStatus.Remove(status);
+        await _context.SaveChangesAsync();
+        return ApiResponse.Ok("Project status deleted successfully");
+    }
+
+    public Task<bool> ExistsAsync(int id)
+    {
+        throw new NotImplementedException();
     }
 }
