@@ -53,20 +53,20 @@ namespace PMSYSAPI.Services.Implementations
             }
         }
 
-        public async Task<ApiResponse<ProjectDto>> GetProjectByIdAsync(int id)
+        public async Task<ApiResponse<tbProjList>> GetProjectByIdAsync(int id)
         {
             try
             {
                 var project = await _projectRepository.GetByIdAsync(id);
                 if (project == null)
-                    return ApiResponse<ProjectDto>.Fail($"Project with ID {id} not found");
+                    return ApiResponse<tbProjList>.Fail($"Project  ID {id} not found");
 
-                var dto = _mapper.Map<ProjectDto>(project);
-                return ApiResponse<ProjectDto>.Ok("Project retrieved successfully", dto);
+                var dto = _mapper.Map<tbProjList>(project);
+                return ApiResponse<tbProjList>.Ok("Project retrieved successfully", dto);
             }
             catch (Exception ex)
             {
-                return ApiResponse<ProjectDto>.Error("Error retrieving project", ex);
+                return ApiResponse<tbProjList>.Error("Error retrieving project", ex);
             }
         }
 

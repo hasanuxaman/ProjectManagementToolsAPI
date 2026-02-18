@@ -10,6 +10,8 @@ namespace PMSYSAPI.DTOs.Project
         public string ProjShortname { get; set; } = string.Empty;
         public string ProjDesc { get; set; } = string.Empty;
         public int CompCod { get; set; }
+        public string? CompName { get; set; }
+        public string? PhaseName { get; set; }
         public int PhaseCod { get; set; }
         public int StatusCod { get; set; }
         public DateTime? InitDate { get; set; }

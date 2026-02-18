@@ -1,7 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PMSYSAPI.Repository.Interfaces;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using PMSYSAPI.Data;
+using PMSYSAPI.DTOs.Project;
 using PMSYSAPI.Models.Entities;
+using PMSYSAPI.Repository.Interfaces;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PMSYSAPI.Repository.Implementations
 {
@@ -19,11 +23,62 @@ namespace PMSYSAPI.Repository.Implementations
             return await _context.tbProjList.ToListAsync();
         }
 
+        //public async Task<ProjectDto?> GetByIdAsync(int id)
+        //{
+        //    var project = await (from p in _context.tbProjList
+        //                         join c in _context.tbComp
+        //                             on p.ProjCompCod equals c.CompCod into pc
+        //                         from c in pc.DefaultIfEmpty() 
+
+        //                         join ph in _context.tbProjPhase
+        //                             on p.ProjPhaseCod equals ph.PhaseCod into pp
+        //                         from ph in pp.DefaultIfEmpty() 
+
+        //                         where p.ProjCod == id
+
+        //                         select new ProjectDto
+        //                         {
+        //                             ProjCod = p.ProjCod,
+        //                             ProjName = p.ProjName,
+        //                             CompName = c != null ? c.Compname : null,
+        //                             PhaseName = ph != null ? ph.PhaseName : null,
+        //                             InitDate = p.ProjInitDate
+        //                         }).FirstOrDefaultAsync();
+
+        //    return project;
+        //}
         public async Task<tbProjList?> GetByIdAsync(int id)
         {
-            return await _context.tbProjList
-                .FirstOrDefaultAsync(p => p.ProjCod == id);
+            var project = await (from p in _context.tbProjList
+                                 join c in _context.tbComp
+                                     on p.ProjCompCod equals c.CompCod into pc
+                                 from c in pc.DefaultIfEmpty()  // left join
+
+                                 join ph in _context.tbProjPhase
+                                     on p.ProjPhaseCod equals ph.PhaseCod into pp
+                                 from ph in pp.DefaultIfEmpty()  // left join
+
+                                 where p.ProjCod == id
+
+                                 select new tbProjList
+                                 {
+                                     ProjCod = p.ProjCod,
+                                     ProjName = p.ProjName,
+                                     ProjShortname = p.ProjShortname,
+                                     ProjDesc = p.ProjDesc,
+                                     ProjCompCod = p.ProjCompCod,
+                                     ProjPhaseCod = p.ProjPhaseCod,
+                                     ProjStsCod = p.ProjStsCod,
+                                     ProjInitDate = p.ProjInitDate,
+                                     ProjStrtPlndt = p.ProjStrtPlndt,
+                                     ProjEndPlandt = p.ProjEndPlandt,
+                                     ProjEstAmount = p.ProjEstAmount,
+                                   
+                                 }).FirstOrDefaultAsync();
+
+            return project;
         }
+
 
         public async Task<tbProjList?> GetByNameAsync(string name)
         {

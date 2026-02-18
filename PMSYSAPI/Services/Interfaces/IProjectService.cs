@@ -1,11 +1,12 @@
 ﻿using PMSYSAPI.DTOs.Project;
+using PMSYSAPI.Models.Entities;
 
 namespace PMSYSAPI.Services.Interfaces
 {
     public interface IProjectService
     {
         Task<ApiResponse<IEnumerable<ProjectDto>>> GetAllProjectsAsync();
-        Task<ApiResponse<ProjectDto>> GetProjectByIdAsync(int id);
+        Task<ApiResponse<tbProjList>> GetProjectByIdAsync(int id);
         Task<ApiResponse<ProjectDto>> CreateProjectAsync(CreateProjectDto createProjectDto);
         Task<ApiResponse<ProjectDto>> CreateProjectUsingSpAsync(CreateProjectDto createProjectDto);
         Task<ApiResponse<ProjectDto>> UpdateProjectAsync(int id, UpdateProjectDto updateProjectDto);

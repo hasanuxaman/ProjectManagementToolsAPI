@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PMSYSAPI.DTOs.Project;
+using PMSYSAPI.Models.Entities;
 using PMSYSAPI.Services.Interfaces;
 
 namespace PMSYSAPI.Controllers
@@ -26,7 +27,7 @@ namespace PMSYSAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ApiResponse<ProjectDto>>> GetProject(int id)
+        public async Task<ActionResult<ApiResponse<tbProjList>>> GetProject(int id)
         {
             var response = await _projectService.GetProjectByIdAsync(id);
             if (!response.Success)

@@ -1,4 +1,5 @@
-﻿using PMSYSAPI.Models.Entities;
+﻿using PMSYSAPI.DTOs.Project;
+using PMSYSAPI.Models.Entities;
 using PMSYSAPI.Models.Entities;
 
 namespace PMSYSAPI.Repository.Interfaces
