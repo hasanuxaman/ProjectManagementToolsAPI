@@ -44,11 +44,11 @@ namespace PMSYSAPI.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(new ApiResponse<CompanyGroupDto> { Success = false, Message = "Invalid data" });
 
-            var response = await _companyGroupService.CreateGroupAsync(dto);
-            if (!response.Success)
+            var response = await _companyGroupService.AddCompanyGroupUsingSp(dto);
+            if (!response)
                 return BadRequest(response);
 
-            return CreatedAtAction(nameof(GetCompanyGroup), new { id = response.Data!.GroupCod }, response);
+            return CreatedAtAction(nameof(GetCompanyGroup), response);
         }
 
         // ================== UPDATE ==================

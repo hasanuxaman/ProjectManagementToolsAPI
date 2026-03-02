@@ -1,9 +1,13 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using PMSYSAPI.Data;
 using PMSYSAPI.DTOs.Company;
 using PMSYSAPI.Models.Entities;
 using PMSYSAPI.Services.Interfaces;
+using System.Collections.Generic;
+using Microsoft.Data.SqlClient;
 
 namespace PMSYSAPI.Services.Implementations
 {
@@ -11,11 +15,15 @@ namespace PMSYSAPI.Services.Implementations
     {
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
+        private readonly string _connectionString;
 
-        public CompanyGroupService(AppDbContext context, IMapper mapper)
+        
+
+        public CompanyGroupService(AppDbContext context, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
             _mapper = mapper;
+            _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
         // ================== CRUD ==================
@@ -177,6 +185,25 @@ namespace PMSYSAPI.Services.Implementations
                     Message = "Error deleting company group",
                     Errors = new List<string> { ex.Message }
                 };
+            }
+        }
+
+
+        public async Task<bool> AddCompanyGroupUsingSp(CreateCompanyGroupDto dtos)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                using (var command = new SqlCommand("CompGrp_add", connection))
+                {
+                    command.CommandType = System.Data.CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@GroupName", dtos.GroupName);
+                    command.Parameters.AddWithValue("@Group_Shortname", dtos.GroupShortname);
+                   
+
+                    await connection.OpenAsync();
+                    var result = await command.ExecuteNonQueryAsync();
+                    return result > 0;
+                }
             }
         }
 
